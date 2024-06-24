@@ -41,9 +41,13 @@
       </component>
     </GridItem>
   </GridLayout>
-  <PrimeDialog v-model:visible="dialogVisible" modal header="Select widget" :style="{ width: '80vw' }">
+  <PrimeDialog
+      v-model:visible="dialogVisible"
+      :style="{ width: '80vw' }"
+      modal
+      header="Select widget"
+  >
     <span style="font-weight: 600">lorem ipsum widget</span>
-
     <div>
       <BaseWidget @click="addNewWidget">
         It is a long established fact that a reader will be distracted by the readable content of a page when looking at
