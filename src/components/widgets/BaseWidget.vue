@@ -47,12 +47,13 @@ defineProps<{
 
 defineEmits(['delete', 'add'])
 
-const value = ref(null)
+const value = ref('')
 const editable = ref(false)
 const widgetEl = ref(null)
 function onContentEdit(event: Event) {
   (event.target as HTMLInputElement).blur()
-  value.value = widgetEl.value.innerText.trim()
+  const widgetElHtml = widgetEl.value as unknown as HTMLElement
+  value.value = widgetElHtml.innerText.trim()
   editable.value = false
 }
 </script>

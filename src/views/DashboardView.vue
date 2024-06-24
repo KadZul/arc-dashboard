@@ -130,7 +130,7 @@ function deleteWidgetAdding() {
   }
 }
 
-function deleteWidgetByIdx(idx) {
+function deleteWidgetByIdx(idx: number | string) {
   const targetWidgetIdx = layout.findIndex(({ i }) => i === `${idx}`)
 
   if (~targetWidgetIdx) {
