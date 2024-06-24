@@ -14,7 +14,6 @@
       :row-height="150"
       :margin="[10, 10]"
       :is-draggable="isEditing"
-      :is-resizable="false"
   >
     <GridItem
         v-for="widget of layout"
@@ -24,6 +23,9 @@
         :w="widget.w"
         :h="widget.h"
         :i="widget.i"
+        :static="widget.isAdd"
+        :min-w="4"
+        :min-h="2"
     >
       <component
           v-bind="{ isEditing, idx: widget.i, isAdding: widget.isAdd }"
