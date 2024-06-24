@@ -2,8 +2,9 @@
   <div class="dashboard__top">
     <span>Dashboard</span>
     <PrimeButton
-        label="Edit"
-        icon="pi pi-pencil"
+        :label="isEditing ? null : 'Edit'"
+        :icon="isEditing ? 'pi pi-times' : 'pi pi-pencil'"
+        :rounded="isEditing"
         @click="onEditClick"
     />
   </div>
