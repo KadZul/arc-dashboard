@@ -14,6 +14,7 @@
       :row-height="150"
       :margin="[10, 10]"
       :is-draggable="isEditing"
+      :is-resizable="isEditing"
   >
     <GridItem
         v-for="widget of layout"
