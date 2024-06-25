@@ -16,33 +16,17 @@
       :is-draggable="isEditing"
       :is-resizable="isEditing"
   >
-    <GridItem
+    <template
         v-for="widget of layout"
         :key="widget.i"
-        :x="widget.x"
-        :y="widget.y"
-        :w="widget.w"
-        :h="widget.h"
-        :i="widget.i"
-        :static="widget.isAdd"
-        :min-w="4"
-        :min-h="2"
     >
       <component
-          v-bind="{ isEditing, idx: widget.i, isAdding: widget.isAdd }"
+          v-bind="{ ...widget, isEditing, idx: widget.i, isAdding: widget.isAdd }"
           :is="widget.component"
           @delete="deleteWidgetByIdx"
           @add="onWidgetAdd"
-      >
-        {{ widget.i }}
-        It is a long established fact that a reader will be distracted by the readable content of a page when looking at
-        its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as
-        opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing
-        packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum'
-        will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by
-        accident, sometimes on purpose (injected humour and the like).
-      </component>
-    </GridItem>
+      />
+    </template>
   </GridLayout>
   <PrimeDialog
       v-model:visible="dialogVisible"
@@ -50,48 +34,56 @@
       modal
       header="Select widget"
   >
-    <span style="font-weight: 600">lorem ipsum widget</span>
-    <div>
-      <BaseWidget @click="addNewWidget">
-        It is a long established fact that a reader will be distracted by the readable content of a page when looking at
-        its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as
-        opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing
-        packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum'
-        will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by
-        accident, sometimes on purpose (injected humour and the like).
-      </BaseWidget>
-    </div>
+    <GridLayout
+        v-model:layout="selectLayout"
+        :row-height="150"
+        :margin="[10, 10]"
+        :is-draggable="false"
+        :is-resizable="false"
+    >
+      <template v-for="widget of selectLayout" :key="widget.i">
+        <component v-bind="widget" :is="widget.component" @click="addNewWidget(widget)" />
+      </template>
+    </GridLayout>
   </PrimeDialog>
 </template>
 
 <script setup lang="ts">
-import { GridItem, GridLayout } from "grid-layout-plus";
-import { ref, shallowRef, shallowReactive } from "vue";
+import { GridLayout } from "grid-layout-plus";
+import { ref, shallowReactive } from "vue";
 import BaseWidget from "../components/widgets/BaseWidget.vue"
+import ChartWidget from "@/components/widgets/ChartWidget.vue";
+import DatatableWidget from "@/components/widgets/DatatableWidget.vue";
 
 let index = 3
 const colNum = ref(12)
 const isEditing = ref(false)
 const dialogVisible = ref(false)
 
+const selectLayout = shallowReactive([
+  {x: 0, y: 0, w: 4, h: 2, i: "1", component: ChartWidget, title: 'Chart widget'},
+  {x: 4, y: 0, w: 4, h: 2, i: "2", component: DatatableWidget, title: 'Datatable Widget'},
+  {x: 8, y: 0, w: 4, h: 2, i: "3", component: BaseWidget, title: 'Lorem Ipsum widget'},
+])
 const layout = shallowReactive([
-  {x: 0, y: 0, w: 4, h: 2, i: "0", component: BaseWidget, isAdd: false},
-  {x: 4, y: 0, w: 4, h: 2, i: "1", component: BaseWidget, isAdd: false},
-  {x: 8, y: 0, w: 4, h: 2, i: "2", component: BaseWidget, isAdd: false},
+  {x: 0, y: 0, w: 6, h: 2, i: "1", component: ChartWidget, isAdd: false, title: 'Chart widget'},
+  {x: 6, y: 0, w: 6, h: 2, i: "2", component: DatatableWidget, isAdd: false, title: 'Datatable Widget'},
 ])
 
 function onWidgetAdd() {
+  console.warn('fdsf')
   dialogVisible.value = true
 }
 
-function addNewWidget() {
+function addNewWidget(widget) {
   const addingWidgetIdx = layout.findIndex(({ isAdd }) => isAdd)
 
   if (~addingWidgetIdx) {
     layout.splice(addingWidgetIdx, 1, {
       ...layout[addingWidgetIdx],
+      component: widget.component,
+      title: widget.title,
       isAdd: false,
-      component: BaseWidget,
     })
     addWidgetAdding()
     dialogVisible.value = false
@@ -122,6 +114,7 @@ function addWidgetAdding() {
     i: `${index++}`,
     component: BaseWidget,
     isAdd: true,
+    title: '',
   })
 }
 
@@ -150,7 +143,10 @@ function deleteWidgetByIdx(idx: number | string) {
   padding-bottom: 10px;
 
   span {
+    font-size: 22px;
     font-weight: 800;
+    align-self: center;
+    text-transform: uppercase;
   }
 }
 

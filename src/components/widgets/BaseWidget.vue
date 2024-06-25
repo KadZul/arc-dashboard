@@ -1,65 +1,68 @@
 <template>
-  <div
-      ref="widgetEl"
-      :spellcheck="!editable"
-      :contenteditable="editable"
-      :class="{ 'widget--editing': isEditing }"
-      class="widget"
-      @keydown.enter="onContentEdit"
+  <GridItem
+      :x="x"
+      :y="y"
+      :w="w"
+      :h="h"
+      :i="i"
+      :static="static"
+      :min-w="minW"
+      :min-h="minH"
+      :max-w="maxW"
+      :max-h="maxH"
+      @resized="params => $emit('resized', ...params)"
   >
-    <slot v-if="!isAdding">
-      {{ value }}
-    </slot>
-    <div v-if="isEditing && !editable" class="widget__edit">
-      <PrimeButton
-          v-if="isAdding"
-          icon="pi pi-plus-circle"
-          severity="success"
-          rounded
-          @click="$emit('add')"
-      />
-      <PrimeButton
-          v-if="!isAdding"
-          icon="pi pi-pencil"
-          severity="info"
-          rounded
-          @click="editable = true"
-      />
-      <PrimeButton
-          v-if="!isAdding"
-          icon="pi pi-times-circle"
-          severity="danger"
-          rounded
-          @click="$emit('delete', idx)"
-      />
+    <div
+        :class="{ 'widget--editing': isEditing }"
+        class="widget"
+    >
+      <h3 v-if="title">{{ title }}</h3>
+      <slot v-if="!isAdding">
+        Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
+      </slot>
+      <div v-if="isEditing && !editable" class="widget__edit">
+        <PrimeButton
+            v-if="isAdding"
+            icon="pi pi-plus-circle"
+            severity="success"
+            rounded
+            @click="$emit('add')"
+        />
+        <PrimeButton
+            v-if="!isAdding"
+            icon="pi pi-pencil"
+            severity="info"
+            rounded
+            disabled
+            @click="$emit('edit', idx)"
+        />
+        <PrimeButton
+            v-if="!isAdding"
+            icon="pi pi-times-circle"
+            severity="danger"
+            rounded
+            @click="$emit('delete', idx)"
+        />
+      </div>
     </div>
-  </div>
+  </GridItem>
 </template>
 
 <script setup lang="ts">
 import { ref } from "vue";
+import { BaseWidgetType } from "@/types";
+import { LayoutItem } from "grid-layout-plus";
 
-defineProps<{
-  isEditing?: boolean,
-  isAdding?: boolean,
-  idx?: string | number,
-}>()
+defineProps<BaseWidgetType & LayoutItem>()
 
-defineEmits(['delete', 'add'])
+defineEmits(['edit', 'delete', 'add', 'resized'])
 
-const value = ref('')
 const editable = ref(false)
-const widgetEl = ref(null)
-function onContentEdit(event: Event) {
-  (event.target as HTMLInputElement).blur()
-  const widgetElHtml = widgetEl.value as unknown as HTMLElement
-  value.value = widgetElHtml.innerText.trim()
-  editable.value = false
-}
 </script>
 
 <style lang="scss" scoped>
 .widget {
+  overflow: scroll;
   user-select: none;
   cursor: default;
   position: relative;

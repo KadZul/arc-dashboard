@@ -85,6 +85,9 @@ const MyPreset = definePreset(Aura, {
 
 import Button from "primevue/button"
 import Dialog from "primevue/dialog"
+import Chart from "primevue/chart"
+import Datatable from "primevue/datatable"
+import Column from "primevue/column"
 
 import App from "./App.vue";
 import router from "./router";
@@ -102,6 +105,9 @@ app.use(PrimeVue as any, {
 
 app.component("PrimeButton", Button)
 app.component("PrimeDialog", Dialog)
+app.component("PrimeChart", Chart)
+app.component("PrimeDatatable", Datatable)
+app.component("PrimeColumn", Column)
 
 app.component("GridLayout", GridLayout);
 app.component("GridItem", GridItem);
