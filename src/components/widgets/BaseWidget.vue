@@ -10,7 +10,7 @@
       :min-h="minH"
       :max-w="maxW"
       :max-h="maxH"
-      @resized="params => $emit('resized', ...params)"
+      @resized="(params: Record<string, string & number>) => $emit('resized', params)"
   >
     <div
         :class="{ 'widget--editing': isEditing }"
@@ -50,8 +50,8 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import { BaseWidgetType } from "@/types";
-import { LayoutItem } from "grid-layout-plus";
+import { type BaseWidgetType } from "@/types";
+import { type LayoutItem } from "grid-layout-plus";
 
 defineProps<BaseWidgetType & LayoutItem>()
 
@@ -77,6 +77,7 @@ const editable = ref(false)
     border-style: dashed;
     cursor: auto;
     user-select: auto;
+    overflow: hidden;
   }
 
   &__edit {

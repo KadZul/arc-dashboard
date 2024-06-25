@@ -27,22 +27,24 @@
 </template>
 
 <script setup lang="ts">
-import { ref, nextTick } from "vue";
+import { ref, nextTick, type VNodeRef } from "vue";
 import BaseWidget from "@/components/widgets/BaseWidget.vue";
-import { LayoutItem } from "grid-layout-plus";
-import { BaseWidgetType } from "@/types";
+import { type LayoutItem } from "grid-layout-plus";
+import { type BaseWidgetType } from "@/types";
 
 defineProps<BaseWidgetType & LayoutItem>()
 
-const chart = ref(null)
-const widget = ref(null)
+const chart = ref<VNodeRef | null>(null)
+const widget = ref<VNodeRef | null>(null)
 
 async function resizeChart() {
-    await nextTick()
+  await nextTick()
+  if (chart.value && widget.value) {
     const canvas = chart.value.$el.getElementsByTagName('canvas')[0]
     const widgetEl = widget.value.$el
     const titleEl = widgetEl.getElementsByTagName('h3')[0]
     canvas.style.height = widgetEl.offsetHeight - 20 - titleEl.offsetHeight - 2 + 'px'
+  }
 }
 
 const chartData = ref({

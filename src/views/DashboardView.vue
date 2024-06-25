@@ -50,7 +50,7 @@
 
 <script setup lang="ts">
 import { GridLayout } from "grid-layout-plus";
-import { ref, shallowReactive } from "vue";
+import { type Component, ref, shallowReactive } from "vue";
 import BaseWidget from "../components/widgets/BaseWidget.vue"
 import ChartWidget from "@/components/widgets/ChartWidget.vue";
 import DatatableWidget from "@/components/widgets/DatatableWidget.vue";
@@ -61,17 +61,17 @@ const isEditing = ref(false)
 const dialogVisible = ref(false)
 
 const selectLayout = shallowReactive([
-  {x: 0, y: 0, w: 4, h: 2, i: "1", component: ChartWidget, title: 'Chart widget'},
-  {x: 4, y: 0, w: 4, h: 2, i: "2", component: DatatableWidget, title: 'Datatable Widget'},
-  {x: 8, y: 0, w: 4, h: 2, i: "3", component: BaseWidget, title: 'Lorem Ipsum widget'},
+  {x: 0, y: 0, w: 4, h: 2, i: "0", component: ChartWidget, title: 'Chart widget'},
+  {x: 4, y: 0, w: 4, h: 2, i: "1", component: DatatableWidget, title: 'Datatable Widget'},
+  {x: 8, y: 0, w: 4, h: 2, i: "2", component: BaseWidget, title: 'Lorem Ipsum widget'},
 ])
 const layout = shallowReactive([
-  {x: 0, y: 0, w: 6, h: 2, i: "1", component: ChartWidget, isAdd: false, title: 'Chart widget'},
-  {x: 6, y: 0, w: 6, h: 2, i: "2", component: DatatableWidget, isAdd: false, title: 'Datatable Widget'},
+  {x: 0, y: 0, w: 6, h: 2, i: "0", component: ChartWidget, isAdd: false, title: 'Chart widget'},
+  {x: 6, y: 0, w: 6, h: 2, i: "1", component: DatatableWidget, isAdd: false, title: 'Datatable Widget'},
+  {x: 0, y: 2, w: 4, h: 2, i: "2", component: BaseWidget, isAdd: false, title: 'Lorem Ipsum widget'},
 ])
 
 function onWidgetAdd() {
-  console.warn('fdsf')
   dialogVisible.value = true
 }
 
@@ -126,7 +126,7 @@ function deleteWidgetAdding() {
   }
 }
 
-function deleteWidgetByIdx(idx: number | string) {
+function deleteWidgetByIdx(idx: number | string | unknown) {
   const targetWidgetIdx = layout.findIndex(({ i }) => i === `${idx}`)
 
   if (~targetWidgetIdx) {

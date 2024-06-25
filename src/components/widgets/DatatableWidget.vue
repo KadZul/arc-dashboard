@@ -23,8 +23,8 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import BaseWidget from "@/components/widgets/BaseWidget.vue";
-import { LayoutItem } from "grid-layout-plus";
-import { BaseWidgetType } from "@/types";
+import { type LayoutItem } from "grid-layout-plus";
+import { type BaseWidgetType } from "@/types";
 
 defineProps<BaseWidgetType & LayoutItem>()
 
