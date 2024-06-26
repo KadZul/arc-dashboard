@@ -20,7 +20,7 @@
         ref="chart"
         :data="chartData"
         :options="chartOptions"
-        type="bar"
+        :type="type"
         @loaded="resizeChart"
     />
   </BaseWidget>
@@ -32,7 +32,11 @@ import BaseWidget from "@/components/widgets/BaseWidget.vue";
 import { type LayoutItem } from "grid-layout-plus";
 import { type BaseWidgetType } from "@/types";
 
-defineProps<BaseWidgetType & LayoutItem>()
+type chartProps = {
+  type: string
+}
+
+const props = defineProps<BaseWidgetType & LayoutItem & chartProps>()
 
 const chart = ref<VNodeRef | null>(null)
 const widget = ref<VNodeRef | null>(null)
@@ -65,34 +69,94 @@ const textColor = documentStyle.getPropertyValue('--p-text-color');
 const textColorSecondary = documentStyle.getPropertyValue('--p-text-muted-color');
 const surfaceBorder = documentStyle.getPropertyValue('--p-content-border-color');
 
-const chartOptions = ref({
-  plugins: {
-    legend: {
-      labels: {
-        color: textColor
+const chartOptionsSchema = {
+  doughnut: {
+    plugins: {
+      legend: {
+        labels: {
+          cutout: '60%',
+          color: textColor
+        }
       }
     }
   },
-  maintainAspectRatio: false,
-  scales: {
-    x: {
-      ticks: {
-        color: textColorSecondary
-      },
-      grid: {
-        color: surfaceBorder
+  line: {
+    stacked: false,
+    aspectRatio: 0.6,
+    plugins: {
+      legend: {
+        labels: {
+          color: textColor
+        }
       }
     },
-    y: {
-      beginAtZero: true,
-      ticks: {
-        color: textColorSecondary
+    scales: {
+      x: {
+        ticks: {
+          color: textColorSecondary
+        },
+        grid: {
+          color: surfaceBorder
+        }
       },
-      grid: {
-        color: surfaceBorder
+      y: {
+        type: 'linear',
+        display: true,
+        position: 'left',
+        ticks: {
+          color: textColorSecondary
+        },
+        grid: {
+          color: surfaceBorder
+        }
+      },
+      y1: {
+        type: 'linear',
+        display: true,
+        position: 'right',
+        ticks: {
+          color: textColorSecondary
+        },
+        grid: {
+          drawOnChartArea: false,
+          color: surfaceBorder
+        }
+      }
+    }
+  },
+  bar: {
+    plugins: {
+      legend: {
+        labels: {
+          color: textColor
+        }
+      }
+    },
+    scales: {
+      x: {
+        ticks: {
+          color: textColorSecondary
+        },
+        grid: {
+          color: surfaceBorder
+        }
+      },
+      y: {
+        beginAtZero: true,
+        ticks: {
+          color: textColorSecondary
+        },
+        grid: {
+          color: surfaceBorder
+        }
       }
     }
   }
+}
+
+const chartOptions = ref({
+  ...(chartOptionsSchema[props.type]),
+  maintainAspectRatio: false,
 })
 </script>
 

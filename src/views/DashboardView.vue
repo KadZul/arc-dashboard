@@ -21,8 +21,8 @@
         :key="widget.i"
     >
       <component
-          v-bind="{ ...widget, isEditing, idx: widget.i, isAdding: widget.isAdd }"
-          :is="widget.component"
+          v-bind="getWidgetBind(widget)"
+          :is="widget.options.component"
           @delete="deleteWidgetByIdx"
           @add="onWidgetAdd"
       />
@@ -42,48 +42,103 @@
         :is-resizable="false"
     >
       <template v-for="widget of selectLayout" :key="widget.i">
-        <component v-bind="widget" :is="widget.component" @click="addNewWidget(widget)" />
+        <component
+            v-bind="getListWidgetBind(widget)"
+            :is="widget.options.component"
+            @click="addNewWidget(widget)"
+        />
       </template>
     </GridLayout>
   </PrimeDialog>
 </template>
 
 <script setup lang="ts">
-import { GridLayout } from "grid-layout-plus";
-import { type Component, ref, shallowReactive } from "vue";
-import BaseWidget from "../components/widgets/BaseWidget.vue"
-import ChartWidget from "@/components/widgets/ChartWidget.vue";
-import DatatableWidget from "@/components/widgets/DatatableWidget.vue";
+import { GridLayout } from "grid-layout-plus"
+import { ref, shallowReactive } from "vue"
+import { WidgetsGridType, WidgetsItemType } from "@/types"
 
-let index = 3
+import BaseWidget from "@/components/widgets/BaseWidget.vue"
+import ChartWidget from "@/components/widgets/ChartWidget.vue"
+import DatatableWidget from "@/components/widgets/DatatableWidget.vue"
+
+let index = 2
 const colNum = ref(12)
 const isEditing = ref(false)
 const dialogVisible = ref(false)
 
-const selectLayout = shallowReactive([
-  {x: 0, y: 0, w: 4, h: 2, i: "0", component: ChartWidget, title: 'Chart widget'},
-  {x: 4, y: 0, w: 4, h: 2, i: "1", component: DatatableWidget, title: 'Datatable Widget'},
-  {x: 8, y: 0, w: 4, h: 2, i: "2", component: BaseWidget, title: 'Lorem Ipsum widget'},
+const selectLayout = shallowReactive<WidgetsGridType>([
+  {
+    x: 0, y: 0, w: 4, h: 2, i: "0",
+    options: { component: ChartWidget },
+    props: { title: 'Chart bar widget', type: 'bar' }
+  },
+  {
+    x: 4, y: 0, w: 4, h: 2, i: "1",
+    options: { component: ChartWidget },
+    props: { title: 'Chart doughnut widget', type: 'doughnut' }
+  },
+  {
+    x: 8, y: 0, w: 4, h: 2, i: "2",
+    options: { component: ChartWidget },
+    props: { title: 'Chart line widget', type: 'line' }
+  },
+  {
+    x: 0, y: 2, w: 4, h: 2, i: "3",
+    options: { component: DatatableWidget },
+    props: { title: 'Datatable Widget' }
+  },
+  {
+    x: 4, y: 2, w: 4, h: 2, i: "4",
+    options: { component: BaseWidget },
+    props: { title: 'Lorem Ipsum widget' }
+  },
 ])
-const layout = shallowReactive([
-  {x: 0, y: 0, w: 6, h: 2, i: "0", component: ChartWidget, isAdd: false, title: 'Chart widget'},
-  {x: 6, y: 0, w: 6, h: 2, i: "1", component: DatatableWidget, isAdd: false, title: 'Datatable Widget'},
-  {x: 0, y: 2, w: 4, h: 2, i: "2", component: BaseWidget, isAdd: false, title: 'Lorem Ipsum widget'},
+
+const layout = shallowReactive<WidgetsGridType>([
+  {
+    x: 0, y: 0, w: 6, h: 2, i: "0",
+    options: { component: ChartWidget },
+    props: { title: 'Chart bar widget', type: 'bar' }
+  },
+  {
+    x: 6, y: 0, w: 6, h: 2, i: "1",
+    options: { component: DatatableWidget },
+    props: { title: 'Datatable Widget' }
+  }
 ])
 
 function onWidgetAdd() {
   dialogVisible.value = true
 }
 
-function addNewWidget(widget) {
-  const addingWidgetIdx = layout.findIndex(({ isAdd }) => isAdd)
+function getWidgetBind(widget: WidgetsItemType) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { props, options, ...params } = widget
+
+  return {
+    ...params,
+    ...props,
+    isEditing: isEditing.value,
+    idx: widget.i,
+    isAdding: widget.options.isAdd
+  }
+}
+
+function getListWidgetBind(widget: WidgetsItemType) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { props, options, ...params } = widget
+
+  return { ...props, ...params }
+}
+
+function addNewWidget(widget: WidgetsItemType) {
+  const addingWidgetIdx = layout.findIndex(item => !!item.options.isAdd)
 
   if (~addingWidgetIdx) {
     layout.splice(addingWidgetIdx, 1, {
       ...layout[addingWidgetIdx],
-      component: widget.component,
-      title: widget.title,
-      isAdd: false,
+      options: widget.options,
+      props: widget.props
     })
     addWidgetAdding()
     dialogVisible.value = false
@@ -92,15 +147,15 @@ function addNewWidget(widget) {
 
 function onEditClick() {
   isEditing.value = !isEditing.value
-  const hasAdding = layout.find(({ isAdd }) => isAdd)
+  const addingWidget = layout.find(item => !!item.options.isAdd)
 
   if (isEditing.value) {
-    if (!hasAdding) {
+    if (!addingWidget) {
       addWidgetAdding()
     }
   } else {
-    if (hasAdding) {
-      deleteWidgetAdding()
+    if (addingWidget) {
+      deleteWidgetByIdx(addingWidget.i)
     }
   }
 }
@@ -112,18 +167,9 @@ function addWidgetAdding() {
     w: 4,
     h: 2,
     i: `${index++}`,
-    component: BaseWidget,
-    isAdd: true,
-    title: '',
+    options: { component: BaseWidget, isAdd: true },
+    props: { title: '' }
   })
-}
-
-function deleteWidgetAdding() {
-  const addingWidget = layout.find(({ isAdd }) => isAdd)
-
-  if (addingWidget) {
-    deleteWidgetByIdx(addingWidget.i)
-  }
 }
 
 function deleteWidgetByIdx(idx: number | string | unknown) {
