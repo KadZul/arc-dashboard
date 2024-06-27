@@ -16,21 +16,28 @@
       @delete="$emit('delete', i)"
       @resized="resizeChart"
   >
-    <PrimeChart
-        ref="chart"
-        :data="chartData"
-        :options="chartOptions"
-        :type="type"
-        @loaded="resizeChart"
-    />
+    <div :class="chartWrapperClasses" class="chart-widget">
+      <PrimeChart
+          ref="chart"
+          :data="chartData"
+          :options="chartOptions"
+          :type="type"
+          :plugins="[htmlLegendPlugin, doughnutTotalTextPlugin]"
+          @loaded="resizeChart"
+      />
+      <div v-if="isDoughnut" :id="`widget-legend-${uuid}`"></div>
+    </div>
   </BaseWidget>
 </template>
 
 <script setup lang="ts">
-import { ref, nextTick, type VNodeRef } from "vue";
-import BaseWidget from "@/components/widgets/BaseWidget.vue";
+import { ref, nextTick, type VNodeRef, computed, getCurrentInstance } from "vue";
 import { type LayoutItem } from "grid-layout-plus";
 import { type BaseWidgetType } from "@/types";
+import { htmlLegendPlugin, doughnutTotalTextPlugin } from "@/plugins/ChartPlugins";
+import BaseWidget from "@/components/widgets/BaseWidget.vue";
+
+const instance = getCurrentInstance()
 
 type chartProps = {
   type: string
@@ -40,6 +47,14 @@ const props = defineProps<BaseWidgetType & LayoutItem & chartProps>()
 
 const chart = ref<VNodeRef | null>(null)
 const widget = ref<VNodeRef | null>(null)
+const uuid = ref(instance?.uid || 0)
+
+const isDoughnut = computed(() => props.type === 'doughnut')
+const chartWrapperClasses = computed(() => {
+  return {
+    'chart-widget--custom-legend': isDoughnut.value
+  }
+})
 
 async function resizeChart() {
   await nextTick()
@@ -47,7 +62,7 @@ async function resizeChart() {
     const canvas = chart.value.$el.getElementsByTagName('canvas')[0]
     const widgetEl = widget.value.$el
     const titleEl = widgetEl.getElementsByTagName('h3')[0]
-    canvas.style.height = widgetEl.offsetHeight - 20 - titleEl.offsetHeight - 2 + 'px'
+    canvas.style.height = widgetEl.offsetHeight - 30 - titleEl.offsetHeight - 2 + 'px'
   }
 }
 
@@ -57,8 +72,8 @@ const chartData = ref({
     {
       label: 'Sales',
       data: [540, 325, 702, 620],
-      backgroundColor: ['rgba(249, 115, 22, 0.2)', 'rgba(6, 182, 212, 0.2)', 'rgb(107, 114, 128, 0.2)', 'rgba(139, 92, 246 0.2)'],
-      borderColor: ['rgb(249, 115, 22)', 'rgb(6, 182, 212)', 'rgb(107, 114, 128)', 'rgb(139, 92, 246)'],
+      backgroundColor: ['rgba(249, 115, 22, 0.2)', 'rgba(6, 182, 212, 0.2)', 'rgb(107, 114, 128, 0.2)', 'rgba(143,102,238,0.2)'],
+      borderColor: ['rgb(249, 115, 22)', 'rgb(6, 182, 212)', 'rgb(107, 114, 128)', 'rgb(140,106,217)'],
       borderWidth: 1
     }
   ]
@@ -71,12 +86,15 @@ const surfaceBorder = documentStyle.getPropertyValue('--p-content-border-color')
 
 const chartOptionsSchema = {
   doughnut: {
+    cutout: '80%',
+    spacing: 10,
+    arcBorderColor: 'white',
     plugins: {
+      htmlLegend: {
+        container: `widget-legend-${uuid.value}`
+      },
       legend: {
-        labels: {
-          cutout: '60%',
-          color: textColor
-        }
+        display: false
       }
     }
   },
@@ -84,6 +102,8 @@ const chartOptionsSchema = {
     stacked: false,
     aspectRatio: 0.6,
     plugins: {
+      htmlLegend: false,
+      doughnutTotalTextPlugin: false,
       legend: {
         labels: {
           color: textColor
@@ -126,6 +146,8 @@ const chartOptionsSchema = {
   },
   bar: {
     plugins: {
+      htmlLegend: false,
+      doughnutTotalTextPlugin: false,
       legend: {
         labels: {
           color: textColor
@@ -160,6 +182,11 @@ const chartOptions = ref({
 })
 </script>
 
-<style scoped>
-
+<style lang="scss" scoped>
+.chart-widget {
+  &--custom-legend {
+    display: grid;
+    grid-template-columns: min-content auto;
+  }
+}
 </style>

@@ -55,7 +55,7 @@
 <script setup lang="ts">
 import { GridLayout } from "grid-layout-plus"
 import { ref, shallowReactive } from "vue"
-import { WidgetsGridType, WidgetsItemType } from "@/types"
+import type { WidgetsGridType, WidgetsItemType } from "@/types"
 
 import BaseWidget from "@/components/widgets/BaseWidget.vue"
 import ChartWidget from "@/components/widgets/ChartWidget.vue"
@@ -98,7 +98,7 @@ const layout = shallowReactive<WidgetsGridType>([
   {
     x: 0, y: 0, w: 6, h: 2, i: "0",
     options: { component: ChartWidget },
-    props: { title: 'Chart bar widget', type: 'bar' }
+    props: { title: 'Chart doughnut widget', type: 'doughnut' }
   },
   {
     x: 6, y: 0, w: 6, h: 2, i: "1",

@@ -92,5 +92,9 @@ const editable = ref(false)
     justify-content: center;
     gap: 15px;
   }
+
+  h3 {
+    margin-bottom: 10px;
+  }
 }
 </style>

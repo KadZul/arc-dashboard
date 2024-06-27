@@ -1,5 +1,5 @@
-import { LayoutItem } from "grid-layout-plus";
-import { Component } from "vue";
+import { type LayoutItem } from "grid-layout-plus";
+import { type Component } from "vue";
 
 export type BaseWidgetType = {
     title?: string,
