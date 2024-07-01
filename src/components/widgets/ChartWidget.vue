@@ -6,7 +6,7 @@
       :w="w"
       :h="h"
       :i="i"
-      :min-w="4"
+      :min-w="5"
       :min-h="2"
       :static="static"
       :is-editing="isEditing"

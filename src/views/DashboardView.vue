@@ -162,13 +162,13 @@ function onEditClick() {
 
 function addWidgetAdding() {
   layout.push({
-    x: (layout.length * 4) % (colNum.value || 12),
+    x: (layout.length * 6) % (colNum.value || 12),
     y: layout.length + (colNum.value || 12),
-    w: 4,
+    w: 6,
     h: 2,
     i: `${index++}`,
     options: { component: BaseWidget, isAdd: true },
-    props: { title: '' }
+    props: { title: '', minW: 4, minH: 2 }
   })
 }
 
