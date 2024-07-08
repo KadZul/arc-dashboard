@@ -41,6 +41,11 @@ const items = ref([
     icon: 'pi pi-calendar-clock',
     route: '/schedule-calendar',
   },
+  {
+    label: 'QCalendar lib demo',
+    icon: 'pi pi-github',
+    url: 'https://quasarframework.github.io/quasar-ui-qcalendar/demo'
+  },
 ])
 </script>
 
