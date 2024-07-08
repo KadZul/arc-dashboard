@@ -11,9 +11,7 @@ export default defineConfig({
   server: {
     port: 8080,
   },
-  plugins: [vue(), vueDevTools(), quasar({
-    sassVariables: '@/assets/quasar.vars.sass'
-  })],
+  plugins: [vue(), vueDevTools(), quasar()],
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),

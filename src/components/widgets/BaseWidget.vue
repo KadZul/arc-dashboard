@@ -53,7 +53,7 @@ import { ref } from "vue";
 import { type BaseWidgetType } from "@/types";
 import { type LayoutItem } from "grid-layout-plus";
 
-defineProps<BaseWidgetType & LayoutItem>()
+defineProps<BaseWidgetType & LayoutItem & { onClick?: any }>()
 
 defineEmits(['edit', 'delete', 'add', 'resized'])
 

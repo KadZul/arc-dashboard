@@ -51,6 +51,16 @@ import {
 const selectedDate = ref(today())
 const CURRENT_DAY = new Date()
 
+type CalendarEvent = {
+  id: number,
+  title: string,
+  details: string,
+  start: string,
+  end: string,
+  bgcolor: string,
+  time?: string
+}
+
 let events = ref([
   {
     id: 1,
@@ -153,10 +163,12 @@ let events = ref([
   }
 ])
 
-const getWeekEvents = (week, weekdays) => {
+type WeekEvent = { time?: string, id: number, left: number, right: number, size: number, event: CalendarEvent }
+type WeekEvents = WeekEvent[]
+const getWeekEvents = (week, weekdays): WeekEvents => {
   const firstDay = parsed(week[0].date + ' 00:00')
   const lastDay = parsed(week[week.length - 1].date + ' 23:59')
-  const eventsWeek = []
+  const eventsWeek: WeekEvent[] = []
   const sortedEventsWeek = []
 
   events.value.forEach((event, id) => {
@@ -178,13 +190,13 @@ const getWeekEvents = (week, weekdays) => {
   })
 
   if (eventsWeek.length > 0) {
-    const infoWeek = eventsWeek.sort((a, b) => a.left - b.left)
+    const infoWeek = eventsWeek.sort((a: { left: number }, b: { left: number }) => a.left - b.left)
     infoWeek.forEach((_, i) => {
       insertEvent(sortedEventsWeek, week.length, infoWeek, i, 0, 0)
     })
   }
 
-  return sortedEventsWeek?.length ? sortedEventsWeek : events
+  return sortedEventsWeek
 }
 
 function insertEvent(events, weekLength, infoWeek, index, availableDays, level) {
@@ -241,7 +253,7 @@ function badgeClasses(computedEvent) {
 }
 
 function badgeStyles(computedEvent, weekLength) {
-  const s = {}
+  const s: { width?: string } = {}
   if (computedEvent.size !== undefined) {
     s.width = ((100 / weekLength) * computedEvent.size) + '%'
   }

@@ -104,8 +104,9 @@ const resources = reactive([
   { id: '5', name: 'Olivia' }
 ])
 
-function getEvents (scope) {
-  const formattedEvents = []
+type CalendarItems = { left: string, width: string, title: string }[]
+function getEvents (scope): { left: string, width: string, title: string }[] {
+  const formattedEvents: CalendarItems = []
   if (events.value[ scope.resource.id ]) {
     // get events for the specified resource
     const resourceEvents = events.value[ scope.resource.id ]

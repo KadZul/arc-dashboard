@@ -25,6 +25,7 @@
         :h="widget.h"
         :i="widget.i"
     >
+      <!-- @vue-skip -->
       <component
           v-bind="{ isEditing, idx: widget.i, isAdding: widget.isAdd }"
           :is="widget.component"
@@ -49,6 +50,7 @@
   >
     <span style="font-weight: 600">lorem ipsum widget</span>
     <div>
+      <!-- @vue-skip -->
       <BaseWidget @click="addNewWidget">
         It is a long established fact that a reader will be distracted by the readable content of a page when looking at
         its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as
