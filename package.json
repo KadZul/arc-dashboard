@@ -14,15 +14,20 @@
   },
   "dependencies": {
     "@primevue/themes": "^4.0.0-rc.2",
+    "@quasar/extras": "^1.16.11",
+    "@quasar/quasar-ui-qcalendar": "^4.0.0-beta.19",
     "chart.js": "^4.4.3",
+    "date-fns": "^3.6.0",
     "grid-layout-plus": "^1.0.5",
     "pinia": "^2.1.7",
     "primeicons": "^7.0.0",
     "primevue": "^4.0.0-rc.2",
+    "quasar": "^2.16.5",
     "vue": "^3.4.29",
     "vue-router": "^4.3.3"
   },
   "devDependencies": {
+    "@quasar/vite-plugin": "^1.7.0",
     "@rushstack/eslint-patch": "^1.8.0",
     "@tsconfig/node20": "^20.1.4",
     "@types/node": "^20.14.5",

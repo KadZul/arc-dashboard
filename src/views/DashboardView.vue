@@ -14,19 +14,32 @@
       :row-height="150"
       :margin="[10, 10]"
       :is-draggable="isEditing"
-      :is-resizable="isEditing"
+      :is-resizable="false"
   >
-    <template
+    <GridItem
         v-for="widget of layout"
         :key="widget.i"
+        :x="widget.x"
+        :y="widget.y"
+        :w="widget.w"
+        :h="widget.h"
+        :i="widget.i"
     >
       <component
-          v-bind="getWidgetBind(widget)"
-          :is="widget.options.component"
+          v-bind="{ isEditing, idx: widget.i, isAdding: widget.isAdd }"
+          :is="widget.component"
           @delete="deleteWidgetByIdx"
           @add="onWidgetAdd"
-      />
-    </template>
+      >
+        {{ widget.i }}
+        It is a long established fact that a reader will be distracted by the readable content of a page when looking at
+        its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as
+        opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing
+        packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum'
+        will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by
+        accident, sometimes on purpose (injected humour and the like).
+      </component>
+    </GridItem>
   </GridLayout>
   <PrimeDialog
       v-model:visible="dialogVisible"
@@ -34,111 +47,48 @@
       modal
       header="Select widget"
   >
-    <GridLayout
-        v-model:layout="selectLayout"
-        :row-height="150"
-        :margin="[10, 10]"
-        :is-draggable="false"
-        :is-resizable="false"
-    >
-      <template v-for="widget of selectLayout" :key="widget.i">
-        <component
-            v-bind="getListWidgetBind(widget)"
-            :is="widget.options.component"
-            @click="addNewWidget(widget)"
-        />
-      </template>
-    </GridLayout>
+    <span style="font-weight: 600">lorem ipsum widget</span>
+    <div>
+      <BaseWidget @click="addNewWidget">
+        It is a long established fact that a reader will be distracted by the readable content of a page when looking at
+        its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as
+        opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing
+        packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum'
+        will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by
+        accident, sometimes on purpose (injected humour and the like).
+      </BaseWidget>
+    </div>
   </PrimeDialog>
 </template>
 
 <script setup lang="ts">
-import { GridLayout } from "grid-layout-plus"
-import { ref, shallowReactive } from "vue"
-import type { WidgetsGridType, WidgetsItemType } from "@/types"
+import { GridItem, GridLayout } from "grid-layout-plus";
+import { ref, shallowRef, shallowReactive } from "vue";
+import BaseWidget from "../components/widgets/BaseWidget.vue"
 
-import BaseWidget from "@/components/widgets/BaseWidget.vue"
-import ChartWidget from "@/components/widgets/ChartWidget.vue"
-import DatatableWidget from "@/components/widgets/DatatableWidget.vue"
-
-let index = 2
+let index = 3
 const colNum = ref(12)
 const isEditing = ref(false)
 const dialogVisible = ref(false)
 
-const selectLayout = shallowReactive<WidgetsGridType>([
-  {
-    x: 0, y: 0, w: 4, h: 2, i: "0",
-    options: { component: ChartWidget },
-    props: { title: 'Chart bar widget', type: 'bar' }
-  },
-  {
-    x: 4, y: 0, w: 4, h: 2, i: "1",
-    options: { component: ChartWidget },
-    props: { title: 'Chart doughnut widget', type: 'doughnut' }
-  },
-  {
-    x: 8, y: 0, w: 4, h: 2, i: "2",
-    options: { component: ChartWidget },
-    props: { title: 'Chart line widget', type: 'line' }
-  },
-  {
-    x: 0, y: 2, w: 4, h: 2, i: "3",
-    options: { component: DatatableWidget },
-    props: { title: 'Datatable Widget' }
-  },
-  {
-    x: 4, y: 2, w: 4, h: 2, i: "4",
-    options: { component: BaseWidget },
-    props: { title: 'Lorem Ipsum widget' }
-  },
-])
-
-const layout = shallowReactive<WidgetsGridType>([
-  {
-    x: 0, y: 0, w: 6, h: 2, i: "0",
-    options: { component: ChartWidget },
-    props: { title: 'Chart doughnut widget', type: 'doughnut' }
-  },
-  {
-    x: 6, y: 0, w: 6, h: 2, i: "1",
-    options: { component: DatatableWidget },
-    props: { title: 'Datatable Widget' }
-  }
+const layout = shallowReactive([
+  {x: 0, y: 0, w: 4, h: 2, i: "0", component: BaseWidget, isAdd: false},
+  {x: 4, y: 0, w: 4, h: 2, i: "1", component: BaseWidget, isAdd: false},
+  {x: 8, y: 0, w: 4, h: 2, i: "2", component: BaseWidget, isAdd: false},
 ])
 
 function onWidgetAdd() {
   dialogVisible.value = true
 }
 
-function getWidgetBind(widget: WidgetsItemType) {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { props, options, ...params } = widget
-
-  return {
-    ...params,
-    ...props,
-    isEditing: isEditing.value,
-    idx: widget.i,
-    isAdding: widget.options.isAdd
-  }
-}
-
-function getListWidgetBind(widget: WidgetsItemType) {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { props, options, ...params } = widget
-
-  return { ...props, ...params }
-}
-
-function addNewWidget(widget: WidgetsItemType) {
-  const addingWidgetIdx = layout.findIndex(item => !!item.options.isAdd)
+function addNewWidget() {
+  const addingWidgetIdx = layout.findIndex(({ isAdd }) => isAdd)
 
   if (~addingWidgetIdx) {
     layout.splice(addingWidgetIdx, 1, {
       ...layout[addingWidgetIdx],
-      options: widget.options,
-      props: widget.props
+      isAdd: false,
+      component: BaseWidget,
     })
     addWidgetAdding()
     dialogVisible.value = false
@@ -147,32 +97,40 @@ function addNewWidget(widget: WidgetsItemType) {
 
 function onEditClick() {
   isEditing.value = !isEditing.value
-  const addingWidget = layout.find(item => !!item.options.isAdd)
+  const hasAdding = layout.find(({ isAdd }) => isAdd)
 
   if (isEditing.value) {
-    if (!addingWidget) {
+    if (!hasAdding) {
       addWidgetAdding()
     }
   } else {
-    if (addingWidget) {
-      deleteWidgetByIdx(addingWidget.i)
+    if (hasAdding) {
+      deleteWidgetAdding()
     }
   }
 }
 
 function addWidgetAdding() {
   layout.push({
-    x: (layout.length * 6) % (colNum.value || 12),
+    x: (layout.length * 4) % (colNum.value || 12),
     y: layout.length + (colNum.value || 12),
-    w: 6,
+    w: 4,
     h: 2,
     i: `${index++}`,
-    options: { component: BaseWidget, isAdd: true },
-    props: { title: '', minW: 4, minH: 2 }
+    component: BaseWidget,
+    isAdd: true,
   })
 }
 
-function deleteWidgetByIdx(idx: number | string | unknown) {
+function deleteWidgetAdding() {
+  const addingWidget = layout.find(({ isAdd }) => isAdd)
+
+  if (addingWidget) {
+    deleteWidgetByIdx(addingWidget.i)
+  }
+}
+
+function deleteWidgetByIdx(idx: number | string) {
   const targetWidgetIdx = layout.findIndex(({ i }) => i === `${idx}`)
 
   if (~targetWidgetIdx) {
@@ -189,10 +147,7 @@ function deleteWidgetByIdx(idx: number | string | unknown) {
   padding-bottom: 10px;
 
   span {
-    font-size: 22px;
     font-weight: 800;
-    align-self: center;
-    text-transform: uppercase;
   }
 }
 

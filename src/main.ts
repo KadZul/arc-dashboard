@@ -6,6 +6,14 @@ import { GridLayout, GridItem } from "grid-layout-plus";
 import PrimeVue from "primevue/config";
 import { definePreset } from "@primevue/themes";
 import Aura from '@primevue/themes/aura';
+import { Quasar } from "quasar";
+import QCalendar from '@quasar/quasar-ui-qcalendar'
+import '@quasar/quasar-ui-qcalendar/dist/index.css'
+// Import icon libraries
+import '@quasar/extras/material-icons/material-icons.css'
+
+// Import Quasar css
+import 'quasar/src/css/index.sass'
 
 const MyPreset = definePreset(Aura, {
     semantic: {
@@ -88,6 +96,7 @@ import Dialog from "primevue/dialog"
 import Chart from "primevue/chart"
 import Datatable from "primevue/datatable"
 import Column from "primevue/column"
+import Tooltip from 'primevue/tooltip';
 
 import App from "./App.vue";
 import router from "./router";
@@ -102,12 +111,32 @@ app.use(PrimeVue as any, {
         options: { darkModeSelector: '' }
     }
 })
+app.use(QCalendar as any)
+app.use(Quasar, {
+    config: {
+        brand: {
+            primary: '#1976d2',
+            secondary: '#26A69A',
+            accent: '#9C27B0',
+
+            dark: '#1d1d1d',
+            'dark-page': '#121212',
+
+            positive: '#21BA45',
+            negative: '#C10015',
+            info: '#31CCEC',
+            warning: '#F2C037'
+        }
+    }
+})
 
 app.component("PrimeButton", Button)
 app.component("PrimeDialog", Dialog)
 app.component("PrimeChart", Chart)
 app.component("PrimeDatatable", Datatable)
 app.component("PrimeColumn", Column)
+
+app.directive('tooltip', Tooltip);
 
 app.component("GridLayout", GridLayout);
 app.component("GridItem", GridItem);
